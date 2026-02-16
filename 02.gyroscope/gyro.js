@@ -8,7 +8,7 @@ startBtn.addEventListener('click', () => {
             // El giroscopio mide rad/s. 60Hz es ideal para detectar gestos rápidos.
             const gyro = new Gyroscope({ frequency: 60 });
 
-            const lastRotationZ = 0;
+            let lastRotationZ = 0;
             const threshold = 2.5; // Umbral de sensibilidad
 
             gyro.addEventListener('reading', () => {
