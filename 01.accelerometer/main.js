@@ -3,6 +3,7 @@ const dataDiv = document.getElementById('data');
 const pitchDisplay = document.getElementById('pitch');
 const rollDisplay = document.getElementById('roll');
 
+
 startBtn.addEventListener('click', () => {
     // 1. Verificamos si la API Accelerometer existe en el navegador
     if ("Accelerometer" in window) {
@@ -15,11 +16,16 @@ startBtn.addEventListener('click', () => {
                 console.error("Error del sensor:", event.error.name);
             };
 
+            sensor.addEventListener('reading', function (e) {
+
+            });
+
             sensor.onreading = () => {
                 // Obtenemos lecturas o valores por defecto
                 const ax = sensor.x || 0;
                 const ay = sensor.y || 0;
                 const az = sensor.z || 9.8;
+                console.log(ax, ay, az);
 
                 // Cálculo de Pitch y Roll usando las fórmulas
                 // Pitch: Inclinación respecto al eje X
