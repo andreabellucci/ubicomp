@@ -25,6 +25,7 @@ function addTouch(touch) {
 // Evento cuando se pone un dedo en la pantalla
 document.addEventListener("touchstart", function (e) {
     // Usamos changedTouches para obtener solo los dedos que acaban de tocar
+    console.log(e);
     for (let i = 0; i < e.changedTouches.length; i++) {
         addTouch(e.changedTouches[i]);
     }
