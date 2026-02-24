@@ -1,53 +1,54 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import * as path from 'path';
+import * as fs from 'fs';
+import * as http from 'http';
 
-const PORT = 3000;
+// Responsabilidad del programador
+const requestListener = (req, res) => {
+    const { method, url } = req;
 
-const server = http.createServer((req, res) => {
-    console.log(`${req.method} ${req.url}`);
+    // 1. FILTRADO POR MÉTODO: Solo aceptamos GET
+    if (method !== 'GET') {
+        res.writeHead(405);
+        return res.end('Método no permitido');
+    }
 
-    // 1. Normalización de la ruta: evitar que el usuario acceda a archivos fuera de la carpeta 'public'
-    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
+    // 2. SEGURIDAD DE RUTAS: Evitar que salgan de la carpeta pública
 
-    // 2. Gestión manual de Tipos MIME (Content-Type)
-    const extname = String(path.extname(filePath)).toLowerCase();
-    const mimeTypes = {
-        '.html': 'text/html',
-        '.js': 'text/javascript',
-        '.css': 'text/css',
-        '.json': 'application/json',
-        '.png': 'image/png',
-        '.jpg': 'image/jpg',
-        '.gif': 'image/gif',
-        '.wav': 'audio/wav'
-    };
+    const safePath = path.normalize(url).replace(/^(\.\.[\/\\])+/, '');
+    const imagePath = path.join(process.cwd(), 'public', safePath);
 
-    const contentType = mimeTypes[extname];
+    const ext = path.extname(imagePath).toLowerCase();
+    const imageTypes = { '.jpg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif' };
 
-    // 3. Lectura del sistema de archivos y gestión de errores manual
-    fs.readFile(filePath, (error, content) => {
-        if (error) {
-            if (error.code === 'ENOENT') {
-                // El archivo no existe (404)
-                fs.readFile(path.join(__dirname, 'public', '404.html'), (err, data) => {
-                    res.writeHead(404, { 'Content-Type': 'text/html' });
-                    res.end(data || '<h1>404 Not Found</h1>', 'utf-8');
-                });
-            } else {
-                // Error del servidor (500)
-                res.writeHead(500);
-                res.end(`Error interno: ${error.code}`);
-            }
-        } else {
-            // Éxito (200)
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
+    // 3. VALIDACIÓN DE EXTENSIÓN
+    if (!imageTypes[ext]) {
+        res.writeHead(400);
+        return res.end('Tipo de archivo no soportado o ruta invalida');
+    }
+
+    // 4. GESTIÓN DE EXISTENCIA Y STREAMS (Eficiencia + Control)
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end('404: La imagen no existe en el servidor');
+            return;
         }
-    });
-});
 
-server.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    console.log('Intenta acceder a un archivo que no exista para ver el manejo de errores.');
-});
+        // Enviamos las cabeceras manuales
+        res.writeHead(200, { 'Content-Type': imageTypes[ext] });
+
+        // Usamos Streams
+        const stream = fs.createReadStream(imagePath);
+
+        // Manejo manual de errores del stream
+        stream.on('error', () => {
+            res.writeHead(500);
+            res.end('Error interno al leer el archivo');
+        });
+
+        stream.pipe(res);
+    });
+};
+
+const server = http.createServer(requestListener);
+server.listen(3000, () => console.log('Servidor en http://localhost:3000'));
