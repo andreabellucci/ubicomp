@@ -13,14 +13,24 @@ const requestListener = (req, res) => {
     }
 
     // 2. SEGURIDAD DE RUTAS: Evitar que salgan de la carpeta pública
+    if (url === '/') {
+        const indexHtmlPath = path.join(process.cwd(), 'public', 'index.html');
+        const indexHtml = fs.readFileSync(indexHtmlPath);
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        return res.end(indexHtml);
+    }
 
     const safePath = path.normalize(url).replace(/^(\.\.[\/\\])+/, '');
     const imagePath = path.join(process.cwd(), 'public', safePath);
 
     const ext = path.extname(imagePath).toLowerCase();
-    const imageTypes = { '.jpg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif' };
+    const imageTypes = { '.jpg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.ico': 'image/x-icon' };
 
     // 3. VALIDACIÓN DE EXTENSIÓN
+    if (!ext) {
+        fs.readFileSync()
+    }
+
     if (!imageTypes[ext]) {
         res.writeHead(400);
         return res.end('Tipo de archivo no soportado o ruta invalida');
@@ -35,7 +45,7 @@ const requestListener = (req, res) => {
         }
 
         // Enviamos las cabeceras manuales
-        res.writeHead(200, { 'Content-Type': imageTypes[ext] });
+        res.writeHead(200, { 'Content-Type': imageTypes[ext] || 'application/octet-stream' });
 
         // Usamos Streams
         const stream = fs.createReadStream(imagePath);
