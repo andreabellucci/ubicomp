@@ -27,11 +27,7 @@ const requestListener = (req, res) => {
     const imageTypes = { '.jpg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.ico': 'image/x-icon' };
 
     // 3. VALIDACIÓN DE EXTENSIÓN
-    if (!ext) {
-        fs.readFileSync()
-    }
-
-    if (!imageTypes[ext]) {
+    if (!ext || !imageTypes[ext]) {
         res.writeHead(400);
         return res.end('Tipo de archivo no soportado o ruta invalida');
     }

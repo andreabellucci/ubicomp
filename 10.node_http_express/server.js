@@ -1,6 +1,5 @@
 import express from 'express';
 
-
 const app = express();
 const PORT = 3000;
 
@@ -11,6 +10,9 @@ const PORT = 3000;
 // - Cabeceras de caché y ETags
 app.use(express.static('public'));
 
+app.get('/about', (req, res) => {
+    res.json({ name: 'John Doe', age: 30, course: 'Ubicomp' });
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor Express funcionando en http://localhost:${PORT}`);
