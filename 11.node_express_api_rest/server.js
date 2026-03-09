@@ -32,7 +32,8 @@ app.post('/api/users', (req, res) => {
     // Generar un ID básico basado en la longitud del array
     const user = {
         id: users.length + 1,
-        ...req.body
+        name: req.body.name,
+        email: req.body.email
     };
 
     users.push(user);
