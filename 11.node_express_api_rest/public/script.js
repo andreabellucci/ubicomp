@@ -5,6 +5,11 @@ const userList = document.querySelector('#userList');
 // Función para obtener y mostrar los usuarios
 async function loadUsers() {
     const response = await fetch('/api/users');
+
+    fetch('/api/users')
+        .then(response => response.json())
+        .then(data => console.log(data));
+
     const users = await response.json();
 
     userList.innerHTML = '';

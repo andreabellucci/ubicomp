@@ -9,3 +9,12 @@ socket.addEventListener('open', () => {
 socket.addEventListener('message', (event) => {
     console.log('Message from server:', event.data);
 });
+
+
+const btn = document.querySelector('#sendBtn');
+btn.addEventListener('click', () => {
+    const message = document.querySelector('#messageInput').value;
+    socket.send(message);
+});
+
+

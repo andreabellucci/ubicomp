@@ -14,6 +14,10 @@ app.get('/about', (req, res) => {
     res.json({ name: 'John Doe', age: 30, course: 'Ubicomp' });
 });
 
+app.get('/api/data', (req, res) => {
+    res.json({ name: 'John Doe', age: 30, course: 'Ubicomp' });
+})
+
 app.listen(PORT, () => {
     console.log(`Servidor Express funcionando en http://localhost:${PORT}`);
 });
