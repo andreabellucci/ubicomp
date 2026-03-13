@@ -11,17 +11,24 @@ const io = new Server(server);
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
+
     console.log('Un usuario se ha conectado');
 
     socket.on('disconnect', () => {
         console.log('Usuario desconectado');
     });
 
+    socket.on('ping', (msg) => {
+        console.log('Ping recibido: ', JSON.stringify(msg));
+        socket.emit('pong', 'pong');
+    });
+
     // Escuchar el evento 'message' enviado por un cliente
     socket.on('message', (msg) => {
         console.log('Mensaje recibido: ' + msg);
         // Retransmitir el mensaje a TODOS los usuarios conectados
-        io.emit('message', msg);
+        //io.emit('message', msg);
+        socket.broadcast.emit('message', msg);
     });
 });
 

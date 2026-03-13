@@ -16,4 +16,10 @@ async function getRandomJoke() {
     }
 }
 
-document.querySelector('#get_joke').addEventListener('click', getRandomJoke);
+//document.querySelector('#get_joke').addEventListener('click', getRandomJoke);
+
+function myFunction() {
+    console.log("Hola");
+}
+
+document.querySelector('#joke').addEventListener('click', myFunction);
