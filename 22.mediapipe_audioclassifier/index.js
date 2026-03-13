@@ -2,7 +2,9 @@ import { AudioClassifier, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@
 
 let audioClassifier;
 let audioBuffer = []; // Buffer para acumular muestras para YAMNet
-const BUFFER_SIZE = 16384; // Tamaño que YAMNet espera
+
+const soundText = document.querySelector("#sound-name");
+const confidenceText = document.querySelector("#confidence-val");
 
 async function init() {
     const audio = await FilesetResolver.forAudioTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-audio@0.10.0/wasm");
@@ -13,7 +15,13 @@ async function init() {
 }
 
 async function startAudio() {
-    const audioCtx = new AudioContext();
+    const audioCtx = new AudioContext({
+        latencyHint: "playback"
+    });
+    console.log(audioCtx.sampleRate);
+
+    const NUM_SECONDS = 3;
+    const BUFFER_SIZE = audioCtx.sampleRate * NUM_SECONDS; //Muestra para YAMNet
     await audioCtx.audioWorklet.addModule('audio-processor.js');
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -21,6 +29,7 @@ async function startAudio() {
     const workletNode = new AudioWorkletNode(audioCtx, 'audio-processor');
 
     workletNode.port.onmessage = (event) => {
+
         const chunk = event.data;
         audioBuffer.push(...chunk);
 
@@ -57,5 +66,5 @@ function applyHeuristics(results) {
 }
 
 // Inicialización
-startBtn.addEventListener("click", startAudio);
-createAudioClassifier();
+document.querySelector("#start-btn").addEventListener("click", startAudio);
+init();
