@@ -11,6 +11,7 @@ async function init() {
     audioClassifier = await AudioClassifier.createFromOptions(audio, {
         baseOptions: { modelAssetPath: "https://storage.googleapis.com/mediapipe-models/audio_classifier/yamnet/float32/1/yamnet.tflite" },
         runningMode: "AUDIO_STREAM"
+
     });
 }
 
@@ -21,7 +22,8 @@ async function startAudio() {
     console.log(audioCtx.sampleRate);
 
     const NUM_SECONDS = 3;
-    const BUFFER_SIZE = audioCtx.sampleRate * NUM_SECONDS; //Muestra para YAMNet
+    //const BUFFER_SIZE = audioCtx.sampleRate * NUM_SECONDS; //Muestra para YAMNet
+    const BUFFER_SIZE = 16384;
     await audioCtx.audioWorklet.addModule('audio-processor.js');
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -49,6 +51,9 @@ async function startAudio() {
 function applyHeuristics(results) {
     // Obtenemos la clasificación con mayor probabilidad del primer bloque de resultados
     const topCategory = results[0].classifications[0].categories[0];
+    results.forEach(result => {
+        console.log(result.classifications[0].categories[0]);
+    });
 
     const name = topCategory.categoryName;
     const score = (topCategory.score * 100).toFixed(1);
@@ -57,9 +62,9 @@ function applyHeuristics(results) {
     confidenceText.innerText = score;
 
     // Lógica personalizada basada en eventos específicos
-    if (name === "Clapping" && topCategory.score > 0.6) {
+    if (name === "Car alarm" && topCategory.score > 0.6) {
         soundText.className = "active";
-        console.log("¡He detectado un aplauso!");
+        console.log("¡He detectado una alarma de coche!");
     } else {
         soundText.className = "";
     }
