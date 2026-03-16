@@ -9,17 +9,10 @@ async function getRandomJoke() {
     try {
         const response = await fetch('https://api.chucknorris.io/jokes/random');
         const joke = await response.json();
-        console.log(joke);
-        document.querySelector('#joke').textContent = joke.value;
+
     } catch (error) {
         console.log(error);
     }
 }
 
-//document.querySelector('#get_joke').addEventListener('click', getRandomJoke);
-
-function myFunction() {
-    console.log("Hola");
-}
-
-document.querySelector('#joke').addEventListener('click', myFunction);
+document.querySelector('#get_joke').addEventListener('click', getRandomJoke);
