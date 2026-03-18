@@ -15,6 +15,7 @@ async function createHandLandmarker() {
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
     );
+    console.log(vision);
 
     handLandmarker = await HandLandmarker.createFromOptions(vision, {
         baseOptions: {
@@ -46,6 +47,7 @@ async function predictWebcam() {
 
     if (now - lastDetectionTime >= detectionInterval) {
         const detections = handLandmarker.detectForVideo(videoElement, now);
+
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         if (detections.landmarks && detections.landmarks.length > 0) {
             for (const landmarks of detections.landmarks) {

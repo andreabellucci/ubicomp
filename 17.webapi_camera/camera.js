@@ -1,6 +1,7 @@
 const videoElement = document.querySelector('#webcam');
 const canvas = document.querySelector('#outputCanvas');
 const ctx = canvas.getContext('2d');
+//canvas.style.display = 'none';
 let frameData;
 
 // 1. Configuración de acceso a la cámara (Transparencia 1)
